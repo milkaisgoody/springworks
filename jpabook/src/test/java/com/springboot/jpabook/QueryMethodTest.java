@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -41,5 +44,53 @@ public class QueryMethodTest {
         }
     }
 
+    // 특정 단어가 포함된 글 내용 검색
+    @Test
+    public void testFindByContentContaining(){
+        List<Board> boardList = repository.findByContentContaining("17");
+
+        log.info("검색 결과");
+        for(Board board : boardList){
+            System.out.println("--->" + board);
+        }
+    }
+
+    // 제목 또는 내용에 특정 단어가 포함된 목록 검색
+    @Test
+    public void testFindByTitleContainingOrContentContaining(){
+        List<Board> boardList = repository.findByTitleContainingOrContentContaining("17", "18");
+
+        log.info("검색 결과");
+        for(Board board : boardList){
+            System.out.println("--->" + board);
+        }
+    }
+
+    // 글 제목에 특정 단어가 포함된 글 목록을 내림차순으로 검색
+    @Test
+    public void testfindByTitleContainingOrderByIdDesc(){
+        List<Board> boardList =
+                repository.findByTitleContainingOrderByIdDesc("15");
+
+        log.info("검색 결과");
+        for(Board board : boardList){
+            System.out.println("--->" + board);
+        }
+
+    }
+
+    @Test
+    public void testFindByTitleContaining(){
+        //내림차순 정렬
+        Pageable paging = PageRequest.of(0, 10, Sort.Direction.DESC, "id");
+
+        List<Board> boardList =
+                repository.findByTitleContaining("제목", paging);
+
+        log.info("검색 결과");
+        for(Board board : boardList) {
+            log.info("--->" + board.toString());
+        }
+    }
 
 }
