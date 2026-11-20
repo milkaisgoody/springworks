@@ -28,6 +28,20 @@ public class PostService {
         return postRepository.findAll();
     }
 
+    //글 목록 + 검색
+    public List<Post> search (String type, String keyword){
+        if(keyword == null || keyword.isBlank()){
+            return findAll();  // 검색어가 없으면 전체 목록
+        }
+        keyword = keyword.trim();
+
+        return switch (type == null ? "title" : type){
+            case "content" -> postRepository.findByContentContainingOrderByIdDesc(keyword);
+            case "writer" -> postRepository.findByWriterContainingOrderByIdDesc(keyword);
+            default -> postRepository.findByTitleContainingOrderByIdDesc(keyword);
+        };
+    }
+
     //글 상세보기
     public Post findById(Long id){
         return postRepository.findById(id)
