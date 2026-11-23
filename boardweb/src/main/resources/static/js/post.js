@@ -9,8 +9,7 @@
     if(createButton){
         createButton.addEventListener('click', () => {
             //입력값 검증
-            if(!getValue('title') || !getValue('writer')
-                || !getValue('content')){
+            if(!getValue('title') || !getValue('content')){
                 alert("모든 필드를 입력하세요.");
                 return;
             }
@@ -19,7 +18,6 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     title: getValue('title'),
-                    writer: getValue('writer'),
                     content: getValue('content')
                 })
             }).then(response => {
