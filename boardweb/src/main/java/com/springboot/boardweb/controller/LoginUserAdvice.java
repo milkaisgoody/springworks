@@ -1,5 +1,6 @@
 package com.springboot.boardweb.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -12,5 +13,11 @@ public class LoginUserAdvice {
     public String loginUser(Principal principal){
         //로그인한 아이디 - principal.getName(), 없으면 : null
         return principal == null ? null : principal.getName();
+    }
+
+    // 관리자인가? → 화면의 관리자 메뉴 · 삭제 버튼
+    @ModelAttribute("isAdmin")
+    public boolean isAdmin(HttpServletRequest request) {
+        return request.isUserInRole("ADMIN");   // ROLE_ADMIN 권한이 있으면 true
     }
 }

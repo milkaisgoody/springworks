@@ -14,6 +14,7 @@
     </th:block>
     <th:block th:if="${loginUser != null}">
         <span th:text="${loginUser}">아이디님</span>
+        <a th:if="${isAdmin}" th:href="@{/admin}" class="btn btn-outline-danger btn-sm">관리자</a>
         <form th:action="@{/logout}" method="post" class="m-0">
             <button type="submit" class="btn btn-outline-success btn-sm">로그아웃</button>
         </form>
@@ -41,8 +42,11 @@
         </section>
 
         <a th:href="@{/posts}" class="btn btn-secondary btn-sm">목록</a>
-        <a th:href="@{/new-post(id=${post.id})}" class="btn btn-primary btn-sm">수정</a>
-        <button type="button" id="delete-btn" class="btn btn-danger btn-sm">삭제</button>
+        <!-- 로그인한 아이디 = 글쓴이 일때 -->
+        <th:block th:if="${loginUser == post.writer}">
+            <a th:href="@{/new-post(id=${post.id})}" class="btn btn-primary btn-sm">수정</a>
+            <button type="button" id="delete-btn" class="btn btn-danger btn-sm">삭제</button>
+        </th:block>
     </article>
 </div>
 
