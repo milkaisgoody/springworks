@@ -5,9 +5,11 @@ import com.springboot.boardweb.dto.AddPostRequest;
 import com.springboot.boardweb.dto.PostResponse;
 import com.springboot.boardweb.dto.UpdatePostRequest;
 import com.springboot.boardweb.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,17 +52,21 @@ public class PostApiController {
 
     //글삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id){
-        postService.delete(id);
+    public ResponseEntity<Void> deletePost(@PathVariable Long id,
+                                           Principal principal, HttpServletRequest request){
+        postService.delete(id, principal.getName(), request.isUserInRole("ADMIN"));
         return ResponseEntity.ok().build(); //반환할 객체가 없어서 body() 없음
     }
 
     //글수정
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(@PathVariable Long id,
-                                                   @RequestBody UpdatePostRequest request){
-        Post post = postService.update(id, request);
-        return ResponseEntity.ok().body(new PostResponse(post));
+                                                   @RequestBody UpdatePostRequest request,
+                                                   Principal principal){
+        return ResponseEntity.ok()
+                .body(new PostResponse(postService.update(id, request, principal.getName())));
     }
+
+
 
 }

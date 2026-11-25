@@ -6,6 +6,7 @@ import com.springboot.boardweb.dto.UpdatePostRequest;
 import com.springboot.boardweb.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
@@ -49,18 +50,30 @@ public class PostService {
     }
 
     //글삭제
-    public void delete(Long id){
-        postRepository.deleteById(id);
+    public void delete(Long id, String username, boolean isAdmin){
+        Post post = findById(id); //상세보기 호출
+        //글쓴이와 로그인한 사람이 일치하는지 확인
+        if(!isAdmin){
+            checkWriter(post,username);
+        }
+        postRepository.delete(post);
     }
 
     //글수정
     @Transactional
-    public Post update(Long id, UpdatePostRequest request){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+    public Post update(Long id, UpdatePostRequest request, String username){
+        Post post = findById(id);
+        checkWriter(post,username);
 
         //글수정 (update 함수는 Post에 있음)
         post.update(request.getTitle(), request.getContent());
         return post;
+    }
+
+    //글쓴이와 로그인한 사람 아이디 비교
+    public void checkWriter(Post post, String username){
+        if(!post.getWriter().equals(username)){
+            throw new AccessDeniedException("본인이 쓴 글만 수정, 삭제할 수 있습니다.");
+        }
     }
 }
